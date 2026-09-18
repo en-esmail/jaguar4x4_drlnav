@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="blueberry_farm">
+
+    <!-- Sun & ground plane -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Blueberry farm environment -->
+    <model name="blueberry_farm">
+      <static>true</static>
+      <link name="farm_link">
+        <visual name="farm_visual">
+          <geometry>
+            <mesh>
+              <uri>file:///home/en-esmail/ros2_ws/src/turtlebot3_drl/turtlebot3_drl/farm_environment/meshes/agriculture_world.dae</uri>
+              <scale>1.0 1.0 1.0</scale>
+            </mesh>
+          </geometry>
+          <material>
+            <script>
+              <uri>file:///home/en-esmail/ros2_ws/src/turtlebot3_drl/turtlebot3_drl/farm_environment/meshes/AgriBakeLarge.jpg</uri>
+            </script>
+          </material>
+        </visual>
+        <collision name="farm_collision">
+          <geometry>
+            <mesh>
+              <uri>file:///home/en-esmail/ros2_ws/src/turtlebot3_drl/turtlebot3_drl/farm_environment/meshes/agriculture_world.dae</uri>
+              <scale>1.0 1.0 1.0</scale>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+  </world>
+</sdf>

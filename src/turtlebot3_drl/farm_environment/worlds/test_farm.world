@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="farm_test">
+
+    <gravity>0 0 -9.8</gravity>
+
+    <!-- Physics -->
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <!-- Simple ground plane for reference -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Sun for lighting -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Farm terrain mesh only -->
+    <model name="farm_test_mesh">
+      <static>true</static>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>model://farm/meshes/agriculture_world.dae</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+          <pose>0 0 0 0 0 0</pose>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>model://farm/meshes/agriculture_world.dae</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+          <pose>0 0 0 0 0 0</pose>
+        </collision>
+      </link>
+    </model>
+
+  </world>
+</sdf>

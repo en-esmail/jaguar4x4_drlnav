@@ -1,0 +1,2 @@
+episode, outcome, step, episode_duration, distance, s/cw/co/t
+1, 2, 419, 1.6657015110013162, 2.0128378868103027, 0/1/0/0/0
