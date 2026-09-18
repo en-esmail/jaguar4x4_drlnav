@@ -1,0 +1,9 @@
+repositories:
+  rplidar_ros2:
+    type: git
+    url: https://github.com/CreedyNZ/rplidar_ros2.git
+    version: 1e2447400109c8a06f6613f58d0da50c5efbcbbf
+  turtlebot3:
+    type: git
+    url: https://github.com/ROBOTIS-GIT/turtlebot3.git
+    version: 6b7a53d57a9901c06114710d8c710bb2529c938d
