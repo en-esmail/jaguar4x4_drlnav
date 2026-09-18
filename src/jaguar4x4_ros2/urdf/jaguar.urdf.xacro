@@ -1,0 +1,315 @@
+<?xml version="1.0"?>
+<robot name="jaguar_robot" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:include filename="$(find jaguar4x4_ros2)/urdf/wheel.urdf.xacro"/>
+    <xacro:include filename="$(find jaguar4x4_ros2)/urdf/lidar.xacro"/>
+    <!-- <xacro:include filename="$(find jaguar4x4_ros2)/urdf/lds.xacro"/> -->
+    <!-- <xacro:include filename="$(find jaguar4x4_ros2)/urdf/lss.xacro"/> -->
+
+
+
+    <xacro:arg name="3D_enabled" default="false"/>
+    <xacro:arg name="viper" default="false"/>
+
+    <xacro:property name="M_PI" value="3.14159"/>
+
+    <xacro:property name="wheel_length" value="0.085"/>
+    <xacro:property name="wheel_radius" value="0.13"/>
+
+    <xacro:property name="distance_from_ground" value="0.09"/>
+    <xacro:property name="wheel_base_offset" value="0.03"/>
+    <xacro:property name="base_x_size" value="${0.615-2*wheel_base_offset}"/>
+    <xacro:property name="base_y_size" value="${0.56-wheel_length}"/>
+    <xacro:property name="base_z_size" value="${0.255-distance_from_ground}"/>
+
+    <xacro:property name="wheelbase" value="${base_x_size-2*wheel_radius+2*wheel_base_offset}"/>
+    <xacro:property name="track" value="${base_y_size+wheel_length}"/>
+    <xacro:property name="wheel_vertical_offset" value="${wheel_radius}"/>
+
+    <xacro:property name="laser_x" value="${base_x_size/2-0.0725}"/>
+    <xacro:property name="laser_y" value="0"/>
+    <xacro:property name="laser_z" value="${0.255+0.15}"/>
+    <!-- <xacro:property name="laser_z" value="${0.255+0.05}"/> -->
+
+    <xacro:property name="laser_x_size" value="0.065"/>
+    <xacro:property name="laser_y_size" value="0.09"/>
+    <xacro:property name="laser_z_size" value="0.1"/>
+
+    <xacro:property name="camera_x" value="${base_x_size/2}"/>
+    <xacro:property name="camera_y" value="-0.045"/>
+    <xacro:property name="camera_z" value="0.15"/>
+
+    <xacro:property name="camera_radius" value="${0.025/2}"/>
+    <xacro:property name="camera_length" value="0.01"/>
+     
+    <!-- <xacro:property name="pole_length" value="0.245"/> -->
+    <xacro:property name="pole_length" value="0.02"/>
+    <xacro:property name="pole_radius" value="0.03"/>
+
+    <!-- <xacro:property name="gps_pole_length" value="0.155"/> -->
+    <xacro:property name="gps_pole_length" value="0.02"/>
+    <xacro:property name="gps_pole_radius" value="0.02"/>
+    <xacro:property name="gps_pole_x" value="${-base_x_size/2+0.04}"/>
+    <xacro:property name="gps_pole_y" value="${base_y_size/2-0.04}"/>
+    <xacro:property name="gps_pole_z" value="${base_z_size+distance_from_ground+gps_pole_length/2}"/>
+    <xacro:property name="gps_top_plate_length" value="0.01"/>
+    <xacro:property name="gps_top_plate_radius" value="0.03"/>
+
+    <link name="base_link">
+        <visual>
+            <origin xyz="0 0 ${2*distance_from_ground}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${base_x_size} ${base_y_size} ${base_z_size}"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0 0 0 0.8"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 ${2*distance_from_ground}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${base_x_size} ${base_y_size} ${base_z_size}"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="base_footprint"/>
+    <joint name="base_footprint_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+    </joint>
+
+    <link name="inertial_link">
+        <inertial>
+            <mass value="33.455"/>
+            <origin xyz="-0.08748 -0.00085 0.09947"/>
+            <inertia ixx="0.6022" ixy="-0.02364" ixz="-0.1197" iyy="1.7386" iyz="-0.001544" izz="2.0296"/>
+        </inertial>
+    </link>
+    <joint name="inertial_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="inertial_link"/>
+    </joint>
+
+    <link name="imu_link"/>
+    <joint name="imu_joint" type="fixed">
+        <origin xyz="0 0 ${base_z_size}" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="imu_link"/>
+    </joint>
+
+    <xacro:jaguar_wheel wheel_prefix="front_left">
+        <origin xyz="${wheelbase/2} ${track/2} ${wheel_vertical_offset}" rpy="0 0 0"/>
+    </xacro:jaguar_wheel>
+    <xacro:jaguar_wheel wheel_prefix="front_right">
+        <origin xyz="${wheelbase/2} ${-track/2} ${wheel_vertical_offset}" rpy="0 0 0"/>
+    </xacro:jaguar_wheel>
+    <xacro:jaguar_wheel wheel_prefix="rear_left">
+        <origin xyz="${-wheelbase/2} ${track/2} ${wheel_vertical_offset}" rpy="0 0 0"/>
+    </xacro:jaguar_wheel>
+    <xacro:jaguar_wheel wheel_prefix="rear_right">
+        <origin xyz="${-wheelbase/2} ${-track/2} ${wheel_vertical_offset}" rpy="0 0 0"/>
+    </xacro:jaguar_wheel>
+
+    <!-- <joint name="laser_joint" type="fixed">
+        <origin xyz="${laser_x} ${laser_y} ${laser_z}" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="laser_link"/>
+    </joint>
+
+    <link name="laser_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="${laser_x_size} ${laser_y_size} ${laser_z_size}"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0 0 0 0.8"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="${laser_x_size} ${laser_y_size} ${laser_z_size}"/>
+            </geometry>
+        </collision>
+    </link> -->
+
+
+
+    <joint name="camera_joint" type="fixed">
+        <origin xyz="${camera_x} ${camera_y} ${camera_z}" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="webcamera_link"/>
+    </joint>
+
+    <link name="webcamera_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 ${M_PI/2} 0"/>
+            <geometry>
+                <cylinder length="${camera_length}" radius="${camera_radius}"/>
+            </geometry>
+            <material name="red">
+                <color rgba="255 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 ${M_PI/2} 0"/>
+            <geometry>
+                <cylinder length="${camera_length}" radius="${camera_radius}"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="depth_camera_pole_joint" type="fixed">
+        <origin xyz="0 0 ${base_z_size+distance_from_ground+pole_length/2}" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="depth_camera_pole_link"/>
+    </joint>
+     
+    <link name="depth_camera_pole_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${pole_length}" radius="${pole_radius}"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${pole_length}" radius="${pole_radius}"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="gps_pole_joint" type="fixed">
+        <origin xyz="${gps_pole_x} ${gps_pole_y} ${gps_pole_z}" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="gps_pole_link"/>
+    </joint>
+
+    <link name="gps_pole_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${gps_pole_length}" radius="${gps_pole_radius}"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${gps_pole_length}" radius="${gps_pole_radius}"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="gps_top_plate_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${gps_top_plate_length}" radius="${gps_top_plate_radius}"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${gps_top_plate_length}" radius="${gps_top_plate_radius}"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="gps_top_plate_joint" type="fixed">
+        <origin xyz="0 0 ${gps_pole_length/2+gps_top_plate_length/2}" rpy="0 0 0"/>
+        <parent link="gps_pole_link"/>
+        <child link="gps_top_plate_link"/>
+    </joint>
+
+    <joint name="gps_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="gps_top_plate_link"/>
+        <child link="gps_link"/>
+    </joint>
+
+    <link name="gps_link"/>
+
+    <gazebo>
+        <plugin name='diff_drive_front' filename='libgazebo_ros_diff_drive.so'>
+            <update_rate>50</update_rate>
+            <left_joint>front_left_wheel_joint</left_joint>
+            <right_joint>front_right_wheel_joint</right_joint>
+
+            <wheel_separation>${track}</wheel_separation>
+            <wheel_diameter>${2*wheel_radius}</wheel_diameter>
+
+            <max_wheel_torque>500</max_wheel_torque>
+            <max_wheel_acceleration>10.0</max_wheel_acceleration>
+
+            <command_topic>ros_drrobot_motor_cmd</command_topic>
+            <publish_odom>true</publish_odom>
+            <publish_odom_tf>true</publish_odom_tf>
+            <publish_wheel_tf>true</publish_wheel_tf>
+
+            <odometry_frame>odom</odometry_frame>
+            <robot_base_frame>base_footprint</robot_base_frame>
+        </plugin>
+    </gazebo>
+
+    <gazebo>
+        <plugin name='diff_drive_rear' filename='libgazebo_ros_diff_drive.so'>
+            <update_rate>50</update_rate>
+            <left_joint>rear_left_wheel_joint</left_joint>
+            <right_joint>rear_right_wheel_joint</right_joint>
+
+            <wheel_separation>${track}</wheel_separation>
+            <wheel_diameter>${2*wheel_radius}</wheel_diameter>
+
+            <max_wheel_torque>500</max_wheel_torque>
+            <max_wheel_acceleration>10.0</max_wheel_acceleration>
+
+            <command_topic>ros_drrobot_motor_cmd</command_topic>
+            <publish_odom>false</publish_odom>
+            <publish_odom_tf>false</publish_odom_tf>
+            <publish_wheel_tf>true</publish_wheel_tf>
+
+            <odometry_frame>odom</odometry_frame>
+            <robot_base_frame>base_footprint</robot_base_frame>
+        </plugin>
+    </gazebo>
+
+    <gazebo reference="imu_link">
+        <sensor name="imu_sensor" type="imu">
+            <always_on>true</always_on>
+            <update_rate>50</update_rate>
+            <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+                <ros>
+                    <namespace>/drrobot_imu</namespace>
+                    <remapping>~/out:=data</remapping>
+                </ros>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <gazebo reference="gps_link">
+        <sensor name="gps_sensor" type="gps">
+            <always_on>true</always_on>
+            <update_rate>5.0</update_rate>
+            <plugin name="gps_plugin" filename="libgazebo_ros_gps_sensor.so">
+                <ros>
+                    <namespace>/drrobot_gps</namespace>
+                    <remapping>~/out:=fix</remapping>
+                </ros>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+</robot>

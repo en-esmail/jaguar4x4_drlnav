@@ -1,0 +1,50 @@
+ekf_filter_node:
+  ros__parameters:
+    frequency: 30.0
+    two_d_mode: true
+    publish_tf: true
+
+    map_frame: map
+    odom_frame: odom
+    base_link_frame: base_link
+    world_frame: odom
+
+    # =========================
+    # 1) LiDAR ODOMETRY (rf2o)
+    # =========================
+    odom0: /odom_rf2o             # <--- UPDATED to match Launch file
+    
+    # Config: Use X, Y, and YAW from Lidar
+    odom0_config: [true,  true,  false,  # X, Y, Z
+                   false, false, true,   # Roll, Pitch, Yaw (Enabled Yaw!)
+                   false, false, false,  # dX, dY, dZ
+                   false, false, false,  # dRoll, dPitch, dYaw
+                   false, false, false]  # ax, ay, az
+
+    odom0_differential: false
+    odom0_relative: false
+
+    # =========================
+    # 2) IMU → YAW + ANGULAR VEL
+    # =========================
+    imu0: /imu
+    imu0_config: [false, false, false,
+                  false, false, true,    # Yaw
+                  false, false, false,
+                  false, false, true,    # Yaw Velocity
+                  true,  true,  true]    # Linear Acceleration
+
+    imu0_remove_gravitational_acceleration: true
+
+    # =========================
+    # 3) Wheel Odom → VELOCITY ONLY
+    # =========================
+    odom1: /odom
+    odom1_config: [false, false, false,
+                   false, false, false,
+                   true,  false, false,  # Vx (Forward Velocity)
+                   false, false, true,   # Vyaw (Turning Velocity)
+                   false, false, false]
+
+    odom1_differential: false
+    odom1_relative: false
